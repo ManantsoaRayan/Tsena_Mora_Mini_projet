@@ -1,11 +1,16 @@
-from ollama import chat
+﻿import os
 
 from app.schemas.product import ProductScored
+from ollama import chat
 
 
 class Adviser:
     def __init__(self, model: str = "ministral-3:3b"):
         self.model = model
+        # ðŸ”‘ IMPORTANT : Docker / local compatible
+        os.environ.setdefault(
+            "OLLAMA_HOST", os.getenv("OLLAMA_HOST", "http://ollama:11434")
+        )
 
     def generate_advice(self, products: list[ProductScored]) -> str:
         if not products:
@@ -19,8 +24,8 @@ class Adviser:
         )
 
         prompt = (
-            f"Comparez les produits suivants et sélectionnez le meilleur en fonction du score et des caractéristiques. "
-            f"Expliquez pourquoi c'est le gagnant. Soyez concis et répondez en français.\n\n{products_str}"
+            f"Comparez les produits suivants et sÃ©lectionnez le meilleur en fonction du score et des caractÃ©ristiques. "
+            f"Expliquez pourquoi c'est le gagnant. Soyez concis et rÃ©pondez en franÃ§ais.\n\n{products_str}"
         )
 
         try:

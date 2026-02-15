@@ -1,0 +1,49 @@
+﻿version: "3.9"
+
+services:
+  backend:
+    build: .
+    container_name: tsena_backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ollama
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    restart: always
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama_server
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: >
+      "echo '=== DÃ©marrage Ollama custom ===';
+
+      ollama serve & 
+
+      echo 'Attente API (max 60s)...'; for i in {1..60}; do 
+        if curl -s http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then 
+          echo 'API OK !'; 
+          break; 
+        fi; 
+        sleep 1; 
+      done;
+
+      MODEL='ministral-3:3b';
+
+      echo 'VÃ©rification modÃ¨le $${MODEL}...'; if ollama list | grep -q \"^$${MODEL}[[:space:]]\"; then
+        echo 'DÃ©jÃ  prÃ©sent â†’ skip';
+      else
+        echo 'Absent â†’ ollama pull $${MODEL}';
+        ollama pull $${MODEL} || echo 'Erreur pull - vÃ©rifie connexion/espace disque';
+      fi;
+
+      echo '=== Ollama prÃªt - serveur en cours ==='; wait"
+    restart: always
+
+volumes:
+  ollama_data:

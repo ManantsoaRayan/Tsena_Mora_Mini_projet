@@ -15,12 +15,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        Provider.of<ProductProvider>(context, listen: false).fetchProducts());
+    Future.microtask(
+      () =>
+          Provider.of<ProductProvider>(context, listen: false).fetchProducts(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ProductProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Tsena Mora"),
@@ -64,11 +67,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                    )
+                    ),
                 ],
               );
             },
-          )
+          ),
         ],
       ),
       body: Consumer<ProductProvider>(
@@ -76,7 +79,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
           if (provider.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-
           return Column(
             children: [
               // Filters
@@ -88,7 +90,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          const Text("Category: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                          const Text(
+                            "Category: ",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           const SizedBox(width: 8),
                           FilterChip(
                             label: const Text("All"),
@@ -103,9 +108,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
                               padding: const EdgeInsets.only(right: 8.0),
                               child: FilterChip(
                                 label: Text(category),
-                                selected: provider.selectedCategoryLevel1 == category,
+                                selected:
+                                    provider.selectedCategoryLevel1 == category,
                                 onSelected: (selected) {
-                                  provider.setCategoryLevel1(selected ? category : null);
+                                  provider.setCategoryLevel1(
+                                    selected ? category : null,
+                                  );
                                 },
                               ),
                             );
@@ -118,24 +126,31 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-                            const Text("Sub-Category: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                            const Text(
+                              "Sub-Category: ",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                             const SizedBox(width: 8),
-                             FilterChip(
-                                label: const Text("All"),
-                                selected: provider.selectedCategoryLevel2 == null,
-                                onSelected: (selected) {
-                                  if (selected) provider.setCategoryLevel2(null);
-                                },
-                              ),
-                              const SizedBox(width: 8),
+                            FilterChip(
+                              label: const Text("All"),
+                              selected: provider.selectedCategoryLevel2 == null,
+                              onSelected: (selected) {
+                                if (selected) provider.setCategoryLevel2(null);
+                              },
+                            ),
+                            const SizedBox(width: 8),
                             ...provider.categoryLevel2Options.map((category) {
                               return Padding(
                                 padding: const EdgeInsets.only(right: 8.0),
                                 child: FilterChip(
                                   label: Text(category),
-                                  selected: provider.selectedCategoryLevel2 == category,
+                                  selected:
+                                      provider.selectedCategoryLevel2 ==
+                                      category,
                                   onSelected: (selected) {
-                                    provider.setCategoryLevel2(selected ? category : null);
+                                    provider.setCategoryLevel2(
+                                      selected ? category : null,
+                                    );
                                   },
                                 ),
                               );
@@ -165,6 +180,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
           );
         },
       ),
+      floatingActionButton: (provider.isZero)
+          ? null
+          : Badge(
+              label: Text("${provider.countCompare}"),
+              child: FloatingActionButton(
+                mini: true,
+                onPressed: () {
+                  Navigator.pushNamed(context, '/comparaison');
+                },
+                child: const Icon(Icons.compare_arrows),
+              ),
+            ),
     );
   }
 }

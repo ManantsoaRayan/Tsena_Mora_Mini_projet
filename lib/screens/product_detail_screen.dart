@@ -12,10 +12,9 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ProductProvider>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(product.name),
-      ),
+      appBar: AppBar(title: Text(product.name)),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,14 +44,14 @@ class ProductDetailScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           product.name,
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Text(
                         "MGA ${product.price.toStringAsFixed(2)}",
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
                               color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.bold,
                             ),
@@ -61,7 +60,10 @@ class ProductDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.amber[100],
                       borderRadius: BorderRadius.circular(8),
@@ -81,7 +83,10 @@ class ProductDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   ExpansionTile(
-                    title: const Text("Description", style: TextStyle(fontWeight: FontWeight.bold)),
+                    title: const Text(
+                      "Description",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -96,16 +101,20 @@ class ProductDetailScreen extends StatelessWidget {
                   Row(
                     children: [
                       Chip(
-                        label: Text(product.inStock ? "In Stock" : "Out of Stock"),
-                        backgroundColor: product.inStock ? Colors.green[100] : Colors.red[100],
+                        label: Text(
+                          product.inStock ? "In Stock" : "Out of Stock",
+                        ),
+                        backgroundColor: product.inStock
+                            ? Colors.green[100]
+                            : Colors.red[100],
                         labelStyle: TextStyle(
-                          color: product.inStock ? Colors.green[800] : Colors.red[800],
+                          color: product.inStock
+                              ? Colors.green[800]
+                              : Colors.red[800],
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Chip(
-                        label: Text("Provider: ${product.provider}"),
-                      ),
+                      Chip(label: Text("Provider: ${product.provider}")),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -119,21 +128,39 @@ class ProductDetailScreen extends StatelessWidget {
                             if (isInCompare) {
                               provider.removeFromCompare(product);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Removed from comparison")),
+                                const SnackBar(
+                                  content: Text("Removed from comparison"),
+                                ),
                               );
                             } else {
                               provider.addToCompare(product);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Added to comparison")),
+                                const SnackBar(
+                                  content: Text("Added to comparison"),
+                                ),
                               );
                             }
                           },
-                          icon: Icon(isInCompare ? Icons.remove_circle_outline : Icons.add_circle_outline),
-                          label: Text(isInCompare ? "Remove from Compare" : "Add to Compare"),
+                          icon: Icon(
+                            isInCompare
+                                ? Icons.remove_circle_outline
+                                : Icons.add_circle_outline,
+                          ),
+                          label: Text(
+                            isInCompare
+                                ? "Remove from Compare"
+                                : "Add to Compare",
+                          ),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
-                            backgroundColor: isInCompare ? Colors.red[50] : Theme.of(context).colorScheme.primaryContainer,
-                            foregroundColor: isInCompare ? Colors.red : Theme.of(context).primaryColor,
+                            backgroundColor: isInCompare
+                                ? Colors.red[50]
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                            foregroundColor: isInCompare
+                                ? Colors.red
+                                : Theme.of(context).primaryColor,
                           ),
                         ),
                       );
@@ -149,9 +176,11 @@ class ProductDetailScreen extends StatelessWidget {
                     builder: (context, provider, _) {
                       // Simple suggestion logic: same category level 2, excluding current product
                       final suggestions = provider.products
-                          .where((p) =>
-                              p.categoryLevel2 == product.categoryLevel2 &&
-                              p.ref != product.ref)
+                          .where(
+                            (p) =>
+                                p.categoryLevel2 == product.categoryLevel2 &&
+                                p.ref != product.ref,
+                          )
                           .take(4)
                           .toList();
 
@@ -183,6 +212,22 @@ class ProductDetailScreen extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: (provider.isZero)
+          ? FloatingActionButton(
+            mini: true,
+              onPressed: () {},
+              child: Icon(Icons.compare_arrows),
+            )
+          : Badge(
+              label: Text("${provider.countCompare}"),
+              child: FloatingActionButton(
+                mini: true,
+                onPressed: () {
+                  Navigator.pushNamed(context, '/comparaison');
+                },
+                child: const Icon(Icons.compare_arrows),
+              ),
+            ),
     );
   }
 }
